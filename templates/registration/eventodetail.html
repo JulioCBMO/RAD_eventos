@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ evento.nome }}</h1>
+<p>{{ evento.data_inicio|date:"d/m/Y H:i" }} a {{ evento.data_fim|date:"d/m/Y H:i" }}
+   · Organizador: {{ evento.organizador.username }}</p>
+<p>{{ evento.descricao|linebreaksbr }}</p>
+
+{% if pode_editar %}
+<p>
+  <a href="{% url 'evento_editar' evento.pk %}">Editar evento</a> ·
+  <a href="{% url 'evento_excluir' evento.pk %}">Excluir evento</a> ·
+  <a href="{% url 'painel' evento.pk %}">Painel de inscritos</a>
+  {% if pode_adicionar_atividade %}· <a href="{% url 'atividade_criar' evento.pk %}">Nova atividade</a>{% endif %}
+</p>
+{% endif %}
+
+{% if user.is_authenticated %}
+  {% if inscricao %}
+    <p>Você está inscrito neste evento.
+      <form class="inline" method="post" action="{% url 'cancelar_evento' inscricao.pk %}">{% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button>Cancelar inscrição no evento</button></form></p>
+  {% elif evento.inscricoes_abertas %}
+    <form method="post" action="{% url 'inscrever_evento' evento.pk %}">{% csrf_token %}<button>Inscrever-me no evento</button></form>
+  {% else %}<p>Inscrições encerradas.</p>{% endif %}
+{% else %}
+  {% if evento.inscricoes_abertas %}<p><a href="{% url 'login' %}?next={{ request.path }}">Entre para se inscrever</a></p>
+  {% else %}<p>Inscrições encerradas.</p>{% endif %}
+{% endif %}
+
+<h2>Programação</h2>
+<table>
+  <tr><th>Atividade</th><th>Tipo</th><th>Responsável</th><th>Sala</th><th>Horário</th><th>Vagas</th><th></th></tr>
+  {% for l in linhas %}
+  {% with a=l.atividade %}
+  <tr>
+    <td>{{ a.titulo }}</td>
+    <td>{{ a.get_tipo_display }}</td>
+    <td>{{ a.responsavel }}</td>
+    <td>{{ a.sala.nome }}</td>
+    <td>{{ a.inicio|date:"d/m H:i" }}–{{ a.fim|date:"H:i" }}</td>
+    <td>{{ l.vagas }}</td>
+    <td>
+      {% if l.inscricao_atividade %}
+        <form class="inline" method="post" action="{% url 'cancelar_atividade' l.inscricao_atividade.pk %}">{% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}"><button>Cancelar</button></form>
+      {% elif l.pode_inscrever %}
+        <form class="inline" method="post" action="{% url 'inscrever_atividade' a.pk %}">{% csrf_token %}<button>Inscrever-me</button></form>
+      {% elif l.lotada %}Lotada{% endif %}
+      {% if pode_editar %}
+        <a href="{% url 'atividade_editar' a.pk %}">editar</a> · <a href="{% url 'atividade_excluir' a.pk %}">excluir</a>
+      {% endif %}
+    </td>
+  </tr>
+  {% endwith %}
+  {% empty %}<tr><td colspan="7">Nenhuma atividade cadastrada.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

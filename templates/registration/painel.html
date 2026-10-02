@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Painel — {{ evento.nome }}</h1>
+{% for a in atividades %}
+  <h3>{{ a.titulo }} · {{ a.sala.nome }} · {{ a.inicio|date:"d/m H:i" }}–{{ a.fim|date:"H:i" }}</h3>
+  <p>Inscritos: {{ a.inscricoes.all|length }} · Vagas restantes: {{ a.vagas_restantes }}</p>
+  <ul>
+    {% for ia in a.inscricoes.all %}<li>{{ ia.inscricao_evento.participante.username }}</li>
+    {% empty %}<li>Ninguém inscrito.</li>{% endfor %}
+  </ul>
+{% empty %}<p>Este evento não tem atividades.</p>
+{% endfor %}
+<p><a href="{% url 'evento_detalhe' evento.pk %}">Voltar ao evento</a></p>
+{% endblock %}

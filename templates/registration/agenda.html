@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Minha agenda</h1>
+<table>
+  <tr><th>Quando</th><th>Evento</th><th>Atividade</th><th>Sala</th><th></th></tr>
+  {% for i in itens %}
+  <tr>
+    <td>{{ i.atividade.inicio|date:"d/m/Y H:i" }}–{{ i.atividade.fim|date:"H:i" }}</td>
+    <td>{{ i.atividade.evento.nome }}</td>
+    <td>{{ i.atividade.titulo }}</td>
+    <td>{{ i.atividade.sala.nome }}</td>
+    <td><form class="inline" method="post" action="{% url 'cancelar_atividade' i.pk %}">{% csrf_token %}<button>Cancelar</button></form></td>
+  </tr>
+  {% empty %}<tr><td colspan="5">Você não está inscrito em nenhuma atividade.</td></tr>
+  {% endfor %}
+</table>
+
+<h2>Meus eventos</h2>
+<ul>
+  {% for ins in inscricoes %}
+  <li><a href="{% url 'evento_detalhe' ins.evento.pk %}">{{ ins.evento.nome }}</a>
+    <form class="inline" method="post" action="{% url 'cancelar_evento' ins.pk %}">{% csrf_token %}<button>Cancelar evento inteiro</button></form></li>
+  {% empty %}<li>Nenhuma inscrição em eventos.</li>{% endfor %}
+</ul>
+{% endblock %}
