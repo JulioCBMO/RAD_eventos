@@ -1,0 +1,1 @@
+{% extends "eventos/base.html" %}{% block content %}<h2>Meus eventos</h2>{% for evento in object_list %}<p><a href="{% url 'evento_detalhe' evento.pk %}">{{ evento.nome }}</a></p>{% empty %}<p>Você ainda não organiza eventos.</p>{% endfor %}{% endblock %}

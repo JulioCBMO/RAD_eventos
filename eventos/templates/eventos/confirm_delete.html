@@ -1,0 +1,1 @@
+{% extends "eventos/base.html" %}{% block content %}<h2>Confirmar exclusão</h2><p>Deseja realmente excluir {{ object }}?</p><form method="post">{% csrf_token %}<button type="submit">Confirmar exclusão</button></form><p><a href="{% url 'evento_lista' %}">Cancelar</a></p>{% endblock %}

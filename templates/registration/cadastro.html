@@ -1,0 +1,1 @@
+<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>Cadastro</title></head><body><h1>Criar conta</h1><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Cadastrar</button></form><p><a href="{% url 'login' %}">Entrar</a></p></body></html>
